@@ -22,9 +22,21 @@ android {
             android.defaultConfig.vectorDrawables.useSupportLibrary = true
         }
     }
+
+    compileOptions {
+        targetCompatibility = "8"
+        sourceCompatibility = "8"
+    }
 }
 
 dependencies {
+
+    def room_version = "2.0.0"
+
+    apply plugin: 'kotlin-kapt'
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
     implementation 'com.android.support:recyclerview-v7:29.0.0'
     implementation 'com.android.support:cardview-v7:29.0.0'
 

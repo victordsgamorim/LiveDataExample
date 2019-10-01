@@ -42,6 +42,11 @@ class ListaNomeAdapter(
         notifyItemRangeInserted(0, this.lista.size)
     }
 
+    fun adiciona(pessoa: Pessoa) {
+        lista.add(pessoa)
+        notifyDataSetChanged()
+    }
+
     inner class ListaNomeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private lateinit var pessoa: Pessoa

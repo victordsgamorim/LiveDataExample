@@ -1,8 +1,13 @@
 package com.victor.livedataexample.model
 
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import java.io.Serializable
 
-class Pessoa(
-    val id: Long,
-    val nome: String
+@Entity
+data class Pessoa(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val nome: String = ""
 ) : Serializable
