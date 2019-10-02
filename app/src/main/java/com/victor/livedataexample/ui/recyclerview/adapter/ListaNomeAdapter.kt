@@ -1,9 +1,7 @@
 package com.victor.livedataexample.ui.recyclerview.adapter
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.recyclerview.widget.RecyclerView
 import com.victor.livedataexample.R
 import com.victor.livedataexample.model.Pessoa
@@ -12,7 +10,9 @@ import kotlinx.android.synthetic.main.cardview_item.view.*
 class ListaNomeAdapter(
     private val context: Context,
     private val lista: MutableList<Pessoa> = mutableListOf(),
-    var quandoItemClicado: (pessoa: Pessoa, posicao: Int) -> Unit = { _, _ -> }
+    var quandoItemClicado: (pessoa: Pessoa, posicao: Int) -> Unit = { _, _ -> },
+    var removeItemSelecionado: (pessoa: Pessoa, posicao: Int) -> Unit = { _, _ -> }
+
 ) :
     RecyclerView.Adapter<ListaNomeAdapter.ListaNomeViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaNomeViewHolder {
@@ -52,6 +52,12 @@ class ListaNomeAdapter(
         notifyDataSetChanged()
     }
 
+    fun deleta(posicao: Int) {
+        lista.removeAt(posicao)
+        notifyDataSetChanged()
+    }
+
+
     inner class ListaNomeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private lateinit var pessoa: Pessoa
@@ -62,7 +68,19 @@ class ListaNomeAdapter(
                     quandoItemClicado(pessoa, adapterPosition)
                 }
             }
+
+            itemView.setOnCreateContextMenuListener { menu, view, menuInfo ->
+                MenuInflater(context).inflate(R.menu.lista_produtos_menu, menu)
+                menu.findItem(R.id.menu_lista_produto_remove)
+                    .setOnMenuItemClickListener {
+                        removeItemSelecionado(pessoa, adapterPosition)
+                        true
+                    }
+
+            }
+
         }
+
 
         fun vincula(pessoa: Pessoa) {
             this.pessoa = pessoa

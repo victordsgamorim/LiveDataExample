@@ -1,8 +1,8 @@
 package com.victor.livedataexample.ui.activity
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.victor.livedataexample.R
 import com.victor.livedataexample.database.AppDatabase
 import com.victor.livedataexample.database.dao.PessoaDao
@@ -33,16 +33,13 @@ class ListaNomesActivity : AppCompatActivity() {
         abreFormEditaPessoa()
         abreFormularioNovaPessoa()
 
+        removePessoa()
+
     }
 
     override fun onResume() {
         super.onResume()
         atualizaLista()
-    }
-
-    private fun atualizaLista() {
-        val todos = dao.buscaTodos()
-        adapter.atualiza(todos)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -69,15 +66,6 @@ class ListaNomesActivity : AppCompatActivity() {
 
     }
 
-    private fun editaPessoa(pessoa: Pessoa, posicao: Int) {
-        dao.edita(pessoa)
-        adapter.edita(posicao, pessoa)
-    }
-
-    private fun adicionaPessoa(pessoa: Pessoa) {
-        dao.adiciona(pessoa)
-        adapter.adiciona(pessoa)
-    }
 
     private fun abreFormEditaPessoa() {
         adapter.quandoItemClicado = { pessoa, posicao ->
@@ -96,6 +84,30 @@ class ListaNomesActivity : AppCompatActivity() {
     private fun configuraAdapter() {
         activity_lista_recyclerview.adapter = adapter
     }
+
+    /** CRUD Room and Adapter*/
+    private fun atualizaLista() {
+        val todos = dao.buscaTodos()
+        adapter.atualiza(todos)
+    }
+
+    private fun adicionaPessoa(pessoa: Pessoa) {
+        dao.adiciona(pessoa)
+        adapter.adiciona(pessoa)
+    }
+
+    private fun editaPessoa(pessoa: Pessoa, posicao: Int) {
+        dao.edita(pessoa)
+        adapter.edita(posicao, pessoa)
+    }
+
+    private fun removePessoa() {
+        adapter.removeItemSelecionado = { pessoa, posicao ->
+            dao.deleta(pessoa)
+            adapter.deleta(posicao)
+        }
+    }
+
 }
 
 
