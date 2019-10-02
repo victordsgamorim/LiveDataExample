@@ -8,6 +8,6 @@ import java.io.Serializable
 @Entity
 data class Pessoa(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    var id: Long = 0,
     val nome: String = ""
 ) : Serializable

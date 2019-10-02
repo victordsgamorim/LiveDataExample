@@ -28,34 +28,66 @@ class ListaNomesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         configuraAdapter()
+        atualizaLista()
+
+        abreFormEditaPessoa()
+        abreFormularioNovaPessoa()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        atualizaLista()
+    }
+
+    private fun atualizaLista() {
         val todos = dao.buscaTodos()
         adapter.atualiza(todos)
-
-        acaoDoItemAdapter()
-        acaoDoFab()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 100 && resultCode == 101 && data?.hasExtra("pessoa") as Boolean) {
+        if (requestCode == 100
+            && resultCode == 101
+            && data?.hasExtra("pessoa") as Boolean
+        ) {
             val pessoa = data.getSerializableExtra("pessoa") as Pessoa
-            dao.adiciona(pessoa)
-            adapter.adiciona(pessoa)
+            adicionaPessoa(pessoa)
+        }
+
+        if (requestCode == 100
+            && resultCode == 102
+            && data?.hasExtra("pessoa") as Boolean
+            && data?.hasExtra("posicao")
+        ) {
+            val pessoa = data.getSerializableExtra("pessoa") as Pessoa
+            val posicao = data.getIntExtra("posicao", -1)
+            editaPessoa(pessoa, posicao)
         }
 
 
     }
 
-    private fun acaoDoItemAdapter() {
-        adapter.quandoItemClicado = {
-            abreFormulario.putExtra("pessoa", it)
+    private fun editaPessoa(pessoa: Pessoa, posicao: Int) {
+        dao.edita(pessoa)
+        adapter.edita(posicao, pessoa)
+    }
+
+    private fun adicionaPessoa(pessoa: Pessoa) {
+        dao.adiciona(pessoa)
+        adapter.adiciona(pessoa)
+    }
+
+    private fun abreFormEditaPessoa() {
+        adapter.quandoItemClicado = { pessoa, posicao ->
+            abreFormulario.putExtra("pessoa", pessoa.id)
+            abreFormulario.putExtra("posicao", posicao)
             startActivityForResult(abreFormulario, 100)
         }
     }
 
-    private fun acaoDoFab() {
+    private fun abreFormularioNovaPessoa() {
         activity_fab.setOnClickListener {
             startActivityForResult(abreFormulario, 100)
         }
@@ -65,3 +97,5 @@ class ListaNomesActivity : AppCompatActivity() {
         activity_lista_recyclerview.adapter = adapter
     }
 }
+
+

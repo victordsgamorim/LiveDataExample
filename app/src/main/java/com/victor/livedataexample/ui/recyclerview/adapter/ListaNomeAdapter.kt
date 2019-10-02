@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.cardview_item.view.*
 class ListaNomeAdapter(
     private val context: Context,
     private val lista: MutableList<Pessoa> = mutableListOf(),
-    var quandoItemClicado: (pessoa: Pessoa) -> Unit = {}
+    var quandoItemClicado: (pessoa: Pessoa, posicao: Int) -> Unit = { _, _ -> }
 ) :
     RecyclerView.Adapter<ListaNomeAdapter.ListaNomeViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaNomeViewHolder {
@@ -47,6 +47,11 @@ class ListaNomeAdapter(
         notifyDataSetChanged()
     }
 
+    fun edita(posicao: Int, pessoa: Pessoa) {
+        lista.set(posicao, pessoa)
+        notifyDataSetChanged()
+    }
+
     inner class ListaNomeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private lateinit var pessoa: Pessoa
@@ -54,7 +59,7 @@ class ListaNomeAdapter(
         init {
             itemView.setOnClickListener {
                 if (::pessoa.isInitialized) {
-                    quandoItemClicado(pessoa)
+                    quandoItemClicado(pessoa, adapterPosition)
                 }
             }
         }
