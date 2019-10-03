@@ -33,7 +33,7 @@ class ListaNomesActivity : AppCompatActivity() {
         abreFormEditaPessoa()
         abreFormularioNovaPessoa()
 
-        removePessoa()
+        menuItemRemovePessoa()
 
     }
 
@@ -45,21 +45,21 @@ class ListaNomesActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 100
-            && resultCode == 101
-            && data?.hasExtra("pessoa") as Boolean
+        if (requestCode == PESSOA_REQUEST_CODE
+            && resultCode == PESSOA_NOVA_RESULT_CODE
+            && data?.hasExtra(PESSOA) as Boolean
         ) {
-            val pessoa = data.getSerializableExtra("pessoa") as Pessoa
+            val pessoa = data.getSerializableExtra(PESSOA) as Pessoa
             adicionaPessoa(pessoa)
         }
 
         if (requestCode == 100
             && resultCode == 102
-            && data?.hasExtra("pessoa") as Boolean
-            && data?.hasExtra("posicao")
+            && data?.hasExtra(PESSOA) as Boolean
+            && data?.hasExtra(POSICAO)
         ) {
-            val pessoa = data.getSerializableExtra("pessoa") as Pessoa
-            val posicao = data.getIntExtra("posicao", -1)
+            val pessoa = data.getSerializableExtra(PESSOA) as Pessoa
+            val posicao = data.getIntExtra(POSICAO, POSICAO_DEFAULT_VALUE)
             editaPessoa(pessoa, posicao)
         }
 
@@ -69,15 +69,15 @@ class ListaNomesActivity : AppCompatActivity() {
 
     private fun abreFormEditaPessoa() {
         adapter.quandoItemClicado = { pessoa, posicao ->
-            abreFormulario.putExtra("pessoa", pessoa.id)
-            abreFormulario.putExtra("posicao", posicao)
-            startActivityForResult(abreFormulario, 100)
+            abreFormulario.putExtra(PESSOA, pessoa.id)
+            abreFormulario.putExtra(POSICAO, posicao)
+            startActivityForResult(abreFormulario, PESSOA_REQUEST_CODE)
         }
     }
 
     private fun abreFormularioNovaPessoa() {
         activity_fab.setOnClickListener {
-            startActivityForResult(abreFormulario, 100)
+            startActivityForResult(abreFormulario, PESSOA_REQUEST_CODE)
         }
     }
 
@@ -101,7 +101,7 @@ class ListaNomesActivity : AppCompatActivity() {
         adapter.edita(posicao, pessoa)
     }
 
-    private fun removePessoa() {
+    private fun menuItemRemovePessoa() {
         adapter.removeItemSelecionado = { pessoa, posicao ->
             dao.deleta(pessoa)
             adapter.deleta(posicao)

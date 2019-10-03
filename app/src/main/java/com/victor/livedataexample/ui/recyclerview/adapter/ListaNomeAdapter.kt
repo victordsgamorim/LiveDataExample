@@ -69,6 +69,11 @@ class ListaNomeAdapter(
                 }
             }
 
+            menuRemoveItemListener(itemView)
+
+        }
+
+        private fun menuRemoveItemListener(itemView: View) {
             itemView.setOnCreateContextMenuListener { menu, view, menuInfo ->
                 MenuInflater(context).inflate(R.menu.lista_produtos_menu, menu)
                 menu.findItem(R.id.menu_lista_produto_remove)
@@ -78,7 +83,6 @@ class ListaNomeAdapter(
                     }
 
             }
-
         }
 
 

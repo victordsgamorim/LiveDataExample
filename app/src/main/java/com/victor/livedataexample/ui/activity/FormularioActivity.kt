@@ -11,11 +11,11 @@ import kotlinx.android.synthetic.main.activity_formulario.*
 class FormularioActivity : AppCompatActivity() {
 
     private val pessoaId by lazy {
-        intent.getLongExtra("pessoa", 0)
+        intent.getLongExtra(PESSOA, 0)
     }
 
     private val posicao by lazy {
-        intent.getIntExtra("posicao", -1)
+        intent.getIntExtra(POSICAO, POSICAO_DEFAULT_VALUE)
     }
 
     private val dao by lazy {
@@ -39,7 +39,7 @@ class FormularioActivity : AppCompatActivity() {
     private fun botaoCriaNovoAluno() {
 
 
-        activity_form_button.setOnClickListener{
+        activity_form_button.setOnClickListener {
             val nome = activity_form_nome.text.toString()
             salva(Pessoa(pessoaId, nome))
 
@@ -53,12 +53,12 @@ class FormularioActivity : AppCompatActivity() {
         val intent = Intent()
 
         if (pessoa.id > 0) {
-            intent.putExtra("pessoa", pessoa)
-            intent.putExtra("posicao", posicao)
-            setResult(102, intent)
+            intent.putExtra(PESSOA, pessoa)
+            intent.putExtra(POSICAO, posicao)
+            setResult(PESSOA_EDITA_RESULT_CODE, intent)
         } else {
-            intent.putExtra("pessoa", pessoa)
-            setResult(101, intent)
+            intent.putExtra(PESSOA, pessoa)
+            setResult(PESSOA_NOVA_RESULT_CODE, intent)
         }
 
     }
