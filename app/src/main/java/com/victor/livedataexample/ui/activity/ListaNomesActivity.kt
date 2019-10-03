@@ -3,10 +3,14 @@ package com.victor.livedataexample.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.victor.livedataexample.R
 import com.victor.livedataexample.database.AppDatabase
+import com.victor.livedataexample.factory.ListaNomesActivityViewModelFactory
 import com.victor.livedataexample.model.Pessoa
 import com.victor.livedataexample.repository.PessoaRepository
+import com.victor.livedataexample.ui.activity.viewmodel.ListaNomesActivityViewModel
 import com.victor.livedataexample.ui.recyclerview.adapter.ListaNomeAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -19,9 +23,12 @@ class ListaNomesActivity : AppCompatActivity() {
         Intent(this, FormularioActivity::class.java)
     }
 
-    private val repository by lazy {
-        val dao = AppDatabase.getInstance(this).pessoaDao()
-        PessoaRepository(dao)
+
+    private val viewModel by lazy {
+        val repository = PessoaRepository(AppDatabase.getInstance(this).pessoaDao())
+        val factory = ListaNomesActivityViewModelFactory(repository)
+        val provider = ViewModelProviders.of(this, factory)
+        provider.get(ListaNomesActivityViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,12 +41,6 @@ class ListaNomesActivity : AppCompatActivity() {
         abreFormularioNovaPessoa()
 
         menuItemRemovePessoa()
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        atualizaLista()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -85,28 +86,28 @@ class ListaNomesActivity : AppCompatActivity() {
 
     /** CRUD Room and Adapter*/
     private fun atualizaLista() {
-        repository.atualiza(quandoSucesso = { adapter.atualiza(it) })
+        viewModel.buscaTodos().observe(this, Observer {
+            adapter.atualiza(it)
+        })
     }
 
     private fun adicionaPessoa(pessoa: Pessoa) {
-
-        repository.adiciona(
-            pessoa,
-            quandoSucesso = {
-                it?.let { adapter.adiciona(pessoa) }
-            })
+        viewModel.adiciona(pessoa).observe(this, Observer {
+            it?.let { adapter.adiciona(it) }
+        })
     }
 
     private fun editaPessoa(pessoa: Pessoa, posicao: Int) {
-        repository.edita(
-            pessoa, quandoSucesso = {
-                it?.let { adapter.edita(posicao, it) }
-            })
+        viewModel.editaPessoa(pessoa).observe(this, Observer {
+            it?.let { adapter.edita(posicao, it) }
+        })
     }
 
     private fun menuItemRemovePessoa() {
         adapter.removeItemSelecionado = { pessoa, posicao ->
-            repository.deleta(pessoa, quandoSucesso = { adapter.deleta(posicao) })
+            viewModel.deleta(pessoa).observe(this, Observer {
+                adapter.deleta(posicao)
+            })
         }
     }
 
