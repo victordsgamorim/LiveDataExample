@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.victor.livedataexample.R
+import com.victor.livedataexample.asynctask.BaseAsyncTask
 import com.victor.livedataexample.database.AppDatabase
 import com.victor.livedataexample.model.Pessoa
 import kotlinx.android.synthetic.main.activity_formulario.*
@@ -27,10 +28,10 @@ class FormularioActivity : AppCompatActivity() {
         setContentView(R.layout.activity_formulario)
 
 
-        val pessoa = dao.buscaPorId(pessoaId)
-        pessoa?.let {
-            activity_form_nome.setText(pessoa.nome)
-        }
+        BaseAsyncTask(
+            quandoInicia = { dao.buscaPorId(pessoaId) },
+            quandoFinaliza = { it?.let { activity_form_nome.setText(it.nome) } }
+        ).execute()
 
         botaoCriaNovoAluno()
 

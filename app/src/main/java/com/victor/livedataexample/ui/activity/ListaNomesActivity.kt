@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.victor.livedataexample.R
+import com.victor.livedataexample.asynctask.BaseAsyncTask
 import com.victor.livedataexample.database.AppDatabase
 import com.victor.livedataexample.database.dao.PessoaDao
 import com.victor.livedataexample.model.Pessoa
@@ -29,7 +30,6 @@ class ListaNomesActivity : AppCompatActivity() {
 
         configuraAdapter()
         atualizaLista()
-
         abreFormEditaPessoa()
         abreFormularioNovaPessoa()
 
@@ -62,8 +62,6 @@ class ListaNomesActivity : AppCompatActivity() {
             val posicao = data.getIntExtra(POSICAO, POSICAO_DEFAULT_VALUE)
             editaPessoa(pessoa, posicao)
         }
-
-
     }
 
 
@@ -87,24 +85,29 @@ class ListaNomesActivity : AppCompatActivity() {
 
     /** CRUD Room and Adapter*/
     private fun atualizaLista() {
-        val todos = dao.buscaTodos()
-        adapter.atualiza(todos)
+        BaseAsyncTask(
+            quandoInicia = { dao.buscaTodos() },
+            quandoFinaliza = { resultado -> adapter.atualiza(resultado) }).execute()
     }
 
     private fun adicionaPessoa(pessoa: Pessoa) {
-        dao.adiciona(pessoa)
-        adapter.adiciona(pessoa)
+
+        BaseAsyncTask(
+            quandoInicia = { dao.adiciona(pessoa) },
+            quandoFinaliza = { adapter.adiciona(pessoa) }).execute()
     }
 
     private fun editaPessoa(pessoa: Pessoa, posicao: Int) {
-        dao.edita(pessoa)
-        adapter.edita(posicao, pessoa)
+        BaseAsyncTask(
+            quandoInicia = { dao.edita(pessoa) },
+            quandoFinaliza = { adapter.edita(posicao, pessoa) }).execute()
     }
 
     private fun menuItemRemovePessoa() {
         adapter.removeItemSelecionado = { pessoa, posicao ->
-            dao.deleta(pessoa)
-            adapter.deleta(posicao)
+            BaseAsyncTask(
+                quandoInicia = { dao.deleta(pessoa) },
+                quandoFinaliza = { adapter.deleta(posicao) }).execute()
         }
     }
 
