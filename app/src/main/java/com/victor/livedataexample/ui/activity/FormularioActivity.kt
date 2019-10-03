@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.victor.livedataexample.R
-import com.victor.livedataexample.asynctask.BaseAsyncTask
 import com.victor.livedataexample.database.AppDatabase
 import com.victor.livedataexample.model.Pessoa
+import com.victor.livedataexample.repository.PessoaRepository
 import kotlinx.android.synthetic.main.activity_formulario.*
 
 class FormularioActivity : AppCompatActivity() {
@@ -19,19 +19,18 @@ class FormularioActivity : AppCompatActivity() {
         intent.getIntExtra(POSICAO, POSICAO_DEFAULT_VALUE)
     }
 
-    private val dao by lazy {
-        AppDatabase.getInstance(context = this).pessoaDao()
+    private val repository by lazy {
+        val dao = AppDatabase.getInstance(context = this).pessoaDao()
+        PessoaRepository(dao)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_formulario)
 
-
-        BaseAsyncTask(
-            quandoInicia = { dao.buscaPorId(pessoaId) },
-            quandoFinaliza = { it?.let { activity_form_nome.setText(it.nome) } }
-        ).execute()
+        repository.buscaPorId(
+            pessoaId,
+            quandoSucesso = { it?.let { activity_form_nome.setText(it.nome) } })
 
         botaoCriaNovoAluno()
 

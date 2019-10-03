@@ -4,24 +4,24 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.victor.livedataexample.R
-import com.victor.livedataexample.asynctask.BaseAsyncTask
 import com.victor.livedataexample.database.AppDatabase
-import com.victor.livedataexample.database.dao.PessoaDao
 import com.victor.livedataexample.model.Pessoa
+import com.victor.livedataexample.repository.PessoaRepository
 import com.victor.livedataexample.ui.recyclerview.adapter.ListaNomeAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 class ListaNomesActivity : AppCompatActivity() {
-
-    private val dao: PessoaDao by lazy {
-        AppDatabase.getInstance(this).pessoaDao()
-    }
 
     private val adapter by lazy {
         ListaNomeAdapter(this)
     }
     private val abreFormulario by lazy {
         Intent(this, FormularioActivity::class.java)
+    }
+
+    private val repository by lazy {
+        val dao = AppDatabase.getInstance(this).pessoaDao()
+        PessoaRepository(dao)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,29 +85,28 @@ class ListaNomesActivity : AppCompatActivity() {
 
     /** CRUD Room and Adapter*/
     private fun atualizaLista() {
-        BaseAsyncTask(
-            quandoInicia = { dao.buscaTodos() },
-            quandoFinaliza = { resultado -> adapter.atualiza(resultado) }).execute()
+        repository.atualiza(quandoSucesso = { adapter.atualiza(it) })
     }
 
     private fun adicionaPessoa(pessoa: Pessoa) {
 
-        BaseAsyncTask(
-            quandoInicia = { dao.adiciona(pessoa) },
-            quandoFinaliza = { adapter.adiciona(pessoa) }).execute()
+        repository.adiciona(
+            pessoa,
+            quandoSucesso = {
+                it?.let { adapter.adiciona(pessoa) }
+            })
     }
 
     private fun editaPessoa(pessoa: Pessoa, posicao: Int) {
-        BaseAsyncTask(
-            quandoInicia = { dao.edita(pessoa) },
-            quandoFinaliza = { adapter.edita(posicao, pessoa) }).execute()
+        repository.edita(
+            pessoa, quandoSucesso = {
+                it?.let { adapter.edita(posicao, it) }
+            })
     }
 
     private fun menuItemRemovePessoa() {
         adapter.removeItemSelecionado = { pessoa, posicao ->
-            BaseAsyncTask(
-                quandoInicia = { dao.deleta(pessoa) },
-                quandoFinaliza = { adapter.deleta(posicao) }).execute()
+            repository.deleta(pessoa, quandoSucesso = { adapter.deleta(posicao) })
         }
     }
 
