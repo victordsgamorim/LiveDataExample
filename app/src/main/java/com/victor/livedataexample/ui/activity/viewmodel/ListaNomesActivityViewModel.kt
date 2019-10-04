@@ -18,11 +18,12 @@ class ListaNomesActivityViewModel(
         return repository.adiciona(pessoa)
     }
 
-    fun editaPessoa(pessoa: Pessoa): LiveData<Pessoa?> {
+    fun edita(pessoa: Pessoa): LiveData<Pessoa?> {
         return repository.edita(pessoa)
     }
 
     fun deleta(pessoa: Pessoa): LiveData<Void?> {
         return repository.deleta(pessoa)
     }
+
 }

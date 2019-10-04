@@ -98,7 +98,7 @@ class ListaNomesActivity : AppCompatActivity() {
     }
 
     private fun editaPessoa(pessoa: Pessoa, posicao: Int) {
-        viewModel.editaPessoa(pessoa).observe(this, Observer {
+        viewModel.edita(pessoa).observe(this, Observer {
             it?.let { adapter.edita(posicao, it) }
         })
     }

@@ -27,7 +27,12 @@ class PessoaRepository(private val dao: PessoaDao) {
         return mutableLiveData
     }
 
-    //TODO{"not implemented"}
+    fun buscaPessoa(id: Long): LiveData<Pessoa?> {
+        val mutableLiveData = MutableLiveData<Pessoa?>()
+        buscaPorId(id, quandoSucesso = { mutableLiveData.value = it })
+        return mutableLiveData
+    }
+
     fun deleta(pessoa: Pessoa): LiveData<Void?> {
         val mutableLiveData = MutableLiveData<Void?>()
         deletaInterno(pessoa, quandoSucesso = { mutableLiveData.value = null })
@@ -68,8 +73,7 @@ class PessoaRepository(private val dao: PessoaDao) {
             quandoFinaliza = { quandoSucesso() }).execute()
     }
 
-    fun buscaPorId(id: Long, quandoSucesso: (Pessoa?) -> Unit) {
-        val pessoal: Pessoa?
+    private fun buscaPorId(id: Long, quandoSucesso: (Pessoa?) -> Unit) {
         BaseAsyncTask(
             quandoInicia = { dao.buscaPorId(id) },
             quandoFinaliza = quandoSucesso
