@@ -1,5 +1,6 @@
 package com.victor.livedataexample.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -17,7 +18,7 @@ interface PessoaDao {
     fun deleta(pessoa: Pessoa)
 
     @Query("SELECT * FROM Pessoa")
-    fun buscaTodos(): List<Pessoa>
+    fun buscaTodos(): LiveData<List<Pessoa>?>
 
     @Query("SELECT * FROM Pessoa WHERE id = :idPessoa")
     fun buscaPorId(idPessoa: Long): Pessoa?

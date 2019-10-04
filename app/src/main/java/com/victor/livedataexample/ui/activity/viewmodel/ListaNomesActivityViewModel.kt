@@ -10,7 +10,7 @@ class ListaNomesActivityViewModel(
     private val repository: PessoaRepository
 ) : ViewModel() {
 
-    fun buscaTodos(): LiveData<List<Pessoa>> {
+    fun buscaTodos(): LiveData<List<Pessoa>?> {
         return repository.buscaTodos()
     }
 

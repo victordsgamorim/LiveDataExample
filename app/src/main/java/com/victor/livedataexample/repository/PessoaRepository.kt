@@ -1,6 +1,7 @@
 package com.victor.livedataexample.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.victor.livedataexample.asynctask.BaseAsyncTask
 import com.victor.livedataexample.database.dao.PessoaDao
@@ -8,11 +9,16 @@ import com.victor.livedataexample.model.Pessoa
 
 class PessoaRepository(private val dao: PessoaDao) {
 
-    private val listaPessoa = MutableLiveData<List<Pessoa>>()
+    private val mediator = MediatorLiveData<List<Pessoa>?>()
 
-    fun buscaTodos(): LiveData<List<Pessoa>> {
-        buscaInterno(quandoSucesso = { listaPessoa.value = it })
-        return listaPessoa
+    //TODO("not implemented") still need to implement web service and merge with the mediator
+    fun buscaTodos(): LiveData<List<Pessoa>?> {
+
+        mediator.addSource(dao.buscaTodos()) {
+            mediator.value = it
+        }
+
+        return mediator
     }
 
     fun adiciona(pessoa: Pessoa): LiveData<Pessoa?> {
@@ -37,13 +43,6 @@ class PessoaRepository(private val dao: PessoaDao) {
         val mutableLiveData = MutableLiveData<Void?>()
         deletaInterno(pessoa, quandoSucesso = { mutableLiveData.value = null })
         return mutableLiveData
-    }
-
-    private fun buscaInterno(quandoSucesso: (List<Pessoa>) -> Unit) {
-        BaseAsyncTask(
-            quandoInicia = { dao.buscaTodos() },
-            quandoFinaliza = quandoSucesso
-        ).execute()
     }
 
     private fun adicionaInterno(pessoa: Pessoa, quandoSucesso: (Pessoa?) -> Unit) {

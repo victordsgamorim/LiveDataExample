@@ -23,7 +23,6 @@ class ListaNomesActivity : AppCompatActivity() {
         Intent(this, FormularioActivity::class.java)
     }
 
-
     private val viewModel by lazy {
         val repository = PessoaRepository(AppDatabase.getInstance(this).pessoaDao())
         val factory = ListaNomesActivityViewModelFactory(repository)
@@ -36,12 +35,14 @@ class ListaNomesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         configuraAdapter()
-        atualizaLista()
+
         abreFormEditaPessoa()
         abreFormularioNovaPessoa()
-
         menuItemRemovePessoa()
+
+        atualizaLista()
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -84,10 +85,10 @@ class ListaNomesActivity : AppCompatActivity() {
         activity_lista_recyclerview.adapter = adapter
     }
 
-    /** CRUD Room and Adapter*/
+    /** CRUD ViewModel and Adapter*/
     private fun atualizaLista() {
         viewModel.buscaTodos().observe(this, Observer {
-            adapter.atualiza(it)
+            it?.let { adapter.atualiza(it) }
         })
     }
 
