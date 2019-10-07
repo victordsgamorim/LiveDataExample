@@ -88,7 +88,9 @@ class ListaNomesActivity : AppCompatActivity() {
     /** CRUD ViewModel and Adapter*/
     private fun atualizaLista() {
         viewModel.buscaTodos().observe(this, Observer {
-            it?.let { adapter.atualiza(it) }
+
+            val lista = it.data
+            lista?.let { adapter.atualiza(lista) }
         })
     }
 

@@ -26,5 +26,8 @@ interface PessoaDao {
     @Insert(onConflict = REPLACE)
     fun edita(pessoa: Pessoa)
 
+    @Insert(onConflict = REPLACE)
+    fun salvaLista(lista: List<Pessoa>?)
+
 
 }

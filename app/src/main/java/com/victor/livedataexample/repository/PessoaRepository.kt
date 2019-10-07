@@ -6,17 +6,40 @@ import androidx.lifecycle.MutableLiveData
 import com.victor.livedataexample.asynctask.BaseAsyncTask
 import com.victor.livedataexample.database.dao.PessoaDao
 import com.victor.livedataexample.model.Pessoa
+import com.victor.livedataexample.resource.PessoaResource
+import com.victor.livedataexample.retorfit.webclient.PessoaWebClient
 
 class PessoaRepository(private val dao: PessoaDao) {
 
-    private val mediator = MediatorLiveData<List<Pessoa>?>()
+    private val webClient by lazy {
+        PessoaWebClient()
+    }
 
-    //TODO("not implemented") still need to implement web service and merge with the mediator
-    fun buscaTodos(): LiveData<List<Pessoa>?> {
+    private val mediator = MediatorLiveData<PessoaResource<List<Pessoa>?>>()
+
+    fun buscaTodos(): LiveData<PessoaResource<List<Pessoa>?>> {
 
         mediator.addSource(dao.buscaTodos()) {
-            mediator.value = it
+            mediator.value = PessoaResource(data = it, erro = null)
         }
+
+        val falhasDaApi = MutableLiveData<PessoaResource<List<Pessoa>?>>()
+        mediator.addSource(falhasDaApi) {
+            val resourceAtual = mediator.value
+
+            val listaDaApi: PessoaResource<List<Pessoa>?> =
+                if (resourceAtual != null) {
+                    PessoaResource(data = resourceAtual.data, erro = it.erro)
+                } else {
+                    it
+                }
+
+            mediator.value = listaDaApi
+        }
+
+        buscaTodosApi(quandoErro = {
+            falhasDaApi.value = PessoaResource(data = null, erro = it)
+        })
 
         return mediator
     }
@@ -43,6 +66,19 @@ class PessoaRepository(private val dao: PessoaDao) {
         val mutableLiveData = MutableLiveData<Void?>()
         deletaInterno(pessoa, quandoSucesso = { mutableLiveData.value = null })
         return mutableLiveData
+    }
+
+    private fun buscaTodosApi(quandoErro: (String?) -> Unit) {
+        webClient.buscaTodos(quandoSucesso = {
+            it?.let { salvaListaInterna(it) }
+        }, quandoErro = { quandoErro(it) })
+    }
+
+    private fun salvaListaInterna(lista: List<Pessoa>) {
+        BaseAsyncTask(quandoInicia = {
+            dao.salvaLista(lista)
+        }, quandoFinaliza = {})
+            .execute()
     }
 
     private fun adicionaInterno(pessoa: Pessoa, quandoSucesso: (Pessoa?) -> Unit) {
