@@ -12,6 +12,7 @@ import com.victor.livedataexample.model.Pessoa
 import com.victor.livedataexample.repository.PessoaRepository
 import com.victor.livedataexample.ui.activity.viewmodel.FormularioActivityViewModel
 import kotlinx.android.synthetic.main.activity_formulario.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class FormularioActivity : AppCompatActivity() {
 
@@ -23,11 +24,7 @@ class FormularioActivity : AppCompatActivity() {
         intent.getIntExtra(POSICAO, POSICAO_DEFAULT_VALUE)
     }
 
-    private val viewModel by lazy {
-        val repository = PessoaRepository(AppDatabase.getInstance(this).pessoaDao())
-        val factory = FormularioActivityViewModelFactory(repository)
-        ViewModelProviders.of(this, factory).get(FormularioActivityViewModel::class.java)
-    }
+    private val viewModel by viewModel<FormularioActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
