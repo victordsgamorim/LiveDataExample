@@ -2,9 +2,9 @@ package com.victor.livedataexample.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.victor.livedataexample.R
 import com.victor.livedataexample.model.Pessoa
 import com.victor.livedataexample.ui.fragments.ListaPessoasFragments
@@ -20,9 +20,9 @@ class ListaNomesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pessoas)
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.activity_pessoas_fragment_container, ListaPessoasFragments())
-            .commit()
+        fragmentTransaction {
+            replace(R.id.activity_pessoas_fragment_container, ListaPessoasFragments())
+        }
 
     }
 
@@ -51,23 +51,29 @@ class ListaNomesActivity : AppCompatActivity() {
     override fun onAttachFragment(fragment: Fragment) {
         super.onAttachFragment(fragment)
 
-        if (fragment is ListaPessoasFragments) {
-            fragment.quandoFabClicado = {
-                abreFormularioNovaPessoa()
-            }
+        when (fragment) {
+            is ListaPessoasFragments -> listaPessoaFragment(fragment)
+            is VisualizaPessoaFragment -> visualizaPessoaFragment(fragment)
+        }
+    }
 
-            fragment.quandoItemSelecionado = { pessoa, posicao ->
-                abreEditaPessoa(pessoa)
-            }
+    private fun visualizaPessoaFragment(fragment: VisualizaPessoaFragment) {
+        fragment.quandoFinalizaId = this::finish
+
+        fragment.quandoBotaoClicado = {
+            val intent = Intent(this, FormularioActivity::class.java)
+            intent.putExtra(PESSOA, it.id)
+            startActivityForResult(intent, PESSOA_EDITA_RESULT_CODE)
+        }
+    }
+
+    private fun listaPessoaFragment(fragment: ListaPessoasFragments) {
+        fragment.quandoFabClicado = {
+            abreFormularioNovaPessoa()
         }
 
-        if (fragment is VisualizaPessoaFragment) {
-            fragment.quandoFinalizaId = { finish() }
-            fragment.quandoBotaoClicado = {
-                val intent = Intent(this, FormularioActivity::class.java)
-                intent.putExtra(PESSOA, it.id)
-                startActivityForResult(intent, PESSOA_EDITA_RESULT_CODE)
-            }
+        fragment.quandoItemSelecionado = { pessoa, posicao ->
+            abreEditaPessoa(pessoa)
         }
     }
 
@@ -80,15 +86,20 @@ class ListaNomesActivity : AppCompatActivity() {
         val fragment = VisualizaPessoaFragment()
         fragment.arguments = dados
 
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.activity_pessoas_fragment_container, fragment)
-            .commit()
+        fragmentTransaction {
+            replace(R.id.activity_pessoas_fragment_container, fragment)
+        }
 
     }
 
     private fun abreFormularioNovaPessoa() {
         startActivityForResult(abreFormulario, PESSOA_REQUEST_CODE)
+    }
+
+    private fun fragmentTransaction(executa: FragmentTransaction.() -> Unit) {
+        val transacao = supportFragmentManager.beginTransaction()
+        executa(transacao)
+        transacao.commit()
     }
 
 
