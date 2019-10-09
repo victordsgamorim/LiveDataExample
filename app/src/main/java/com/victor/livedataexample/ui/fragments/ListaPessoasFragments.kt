@@ -1,6 +1,5 @@
-package com.victor.livedataexample.ui.activity.fragments
+package com.victor.livedataexample.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.victor.livedataexample.R
 import com.victor.livedataexample.model.Pessoa
-import com.victor.livedataexample.ui.activity.ListaNomesActivity
-import com.victor.livedataexample.ui.activity.PESSOA
-import com.victor.livedataexample.ui.activity.PESSOA_REQUEST_CODE
-import com.victor.livedataexample.ui.activity.POSICAO
 import com.victor.livedataexample.ui.activity.viewmodel.ListaNomesActivityViewModel
 import com.victor.livedataexample.ui.recyclerview.adapter.ListaNomeAdapter
 import kotlinx.android.synthetic.main.lista_pessoa.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class ListaNomesFragments : Fragment() {
+class ListaPessoasFragments : Fragment() {
 
     private val adapter by lazy {
         context?.let {

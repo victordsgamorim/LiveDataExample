@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.victor.livedataexample.asynctask.BaseAsyncTask
 import com.victor.livedataexample.database.dao.PessoaDao
 import com.victor.livedataexample.model.Pessoa
-import com.victor.livedataexample.resource.PessoaResource
+import com.victor.livedataexample.repository.resource.PessoaResource
 import com.victor.livedataexample.retorfit.webclient.PessoaWebClient
 
 class PessoaRepository(private val dao: PessoaDao) {
@@ -42,6 +42,14 @@ class PessoaRepository(private val dao: PessoaDao) {
         })
 
         return mediator
+    }
+
+    fun buscaPorId(id: Long): LiveData<Pessoa?> {
+        val pessoaEncontrada = MutableLiveData<Pessoa?>()
+
+        buscaPorId(id, quandoSucesso = { pessoaEncontrada.value = it })
+
+        return pessoaEncontrada
     }
 
     fun adiciona(pessoa: Pessoa): LiveData<Pessoa?> {

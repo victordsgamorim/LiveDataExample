@@ -7,6 +7,7 @@ import com.victor.livedataexample.repository.PessoaRepository
 import com.victor.livedataexample.retorfit.webclient.PessoaWebClient
 import com.victor.livedataexample.ui.activity.viewmodel.FormularioActivityViewModel
 import com.victor.livedataexample.ui.activity.viewmodel.ListaNomesActivityViewModel
+import com.victor.livedataexample.ui.activity.viewmodel.VisualizaPessoaActivityViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -36,6 +37,10 @@ val appModule = module {
 
     viewModel<FormularioActivityViewModel> {
         FormularioActivityViewModel(get())
+    }
+
+    viewModel<VisualizaPessoaActivityViewModel> { (id: Long) ->
+        VisualizaPessoaActivityViewModel(id, get())
     }
 
 

@@ -2,11 +2,13 @@ package com.victor.livedataexample.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.victor.livedataexample.R
 import com.victor.livedataexample.model.Pessoa
-import com.victor.livedataexample.ui.activity.fragments.ListaNomesFragments
+import com.victor.livedataexample.ui.fragments.ListaPessoasFragments
+import com.victor.livedataexample.ui.fragments.VisualizaPessoaFragment
 
 class ListaNomesActivity : AppCompatActivity() {
 
@@ -16,7 +18,12 @@ class ListaNomesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_pessoas)
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.activity_pessoas_fragment_container, ListaPessoasFragments())
+            .commit()
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -44,22 +51,39 @@ class ListaNomesActivity : AppCompatActivity() {
     override fun onAttachFragment(fragment: Fragment) {
         super.onAttachFragment(fragment)
 
-        if (fragment is ListaNomesFragments) {
+        if (fragment is ListaPessoasFragments) {
             fragment.quandoFabClicado = {
                 abreFormularioNovaPessoa()
             }
 
             fragment.quandoItemSelecionado = { pessoa, posicao ->
-                abreEditaPessoa(pessoa, posicao)
+                abreEditaPessoa(pessoa)
+            }
+        }
+
+        if (fragment is VisualizaPessoaFragment) {
+            fragment.quandoFinalizaId = { finish() }
+            fragment.quandoBotaoClicado = {
+                val intent = Intent(this, FormularioActivity::class.java)
+                intent.putExtra(PESSOA, it.id)
+                startActivityForResult(intent, PESSOA_EDITA_RESULT_CODE)
             }
         }
     }
 
 
-    private fun abreEditaPessoa(pessoa: Pessoa, posicao: Int) {
-        abreFormulario.putExtra(PESSOA, pessoa.id)
-        abreFormulario.putExtra(POSICAO, posicao)
-        startActivityForResult(abreFormulario, PESSOA_REQUEST_CODE)
+    private fun abreEditaPessoa(pessoa: Pessoa) {
+
+        val dados = Bundle()
+        dados.putLong(PESSOA, pessoa.id)
+
+        val fragment = VisualizaPessoaFragment()
+        fragment.arguments = dados
+
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.activity_pessoas_fragment_container, fragment)
+            .commit()
 
     }
 

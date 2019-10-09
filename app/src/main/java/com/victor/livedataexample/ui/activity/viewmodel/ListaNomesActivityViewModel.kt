@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.victor.livedataexample.model.Pessoa
 import com.victor.livedataexample.repository.PessoaRepository
-import com.victor.livedataexample.resource.PessoaResource
+import com.victor.livedataexample.repository.resource.PessoaResource
 
 class ListaNomesActivityViewModel(
     private val repository: PessoaRepository
