@@ -61,8 +61,12 @@ class VisualizaPessoaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.title = "Pessoa"
+
         visualiza_pessoa_editar_botao.setOnClickListener(View.OnClickListener {
             viewModel.busca.value?.let {quandoBotaoClicado(it) }
         })
+
+
     }
 }

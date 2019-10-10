@@ -1,12 +1,13 @@
 package com.victor.livedataexample.ui.activity
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.victor.livedataexample.R
 import com.victor.livedataexample.model.Pessoa
+import com.victor.livedataexample.ui.activity.extensions.fragmentTransaction
 import com.victor.livedataexample.ui.fragments.ListaPessoasFragments
 import com.victor.livedataexample.ui.fragments.VisualizaPessoaFragment
 
@@ -20,10 +21,60 @@ class ListaNomesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pessoas)
 
-        fragmentTransaction {
-            replace(R.id.activity_pessoas_fragment_container, ListaPessoasFragments())
+        if (savedInstanceState == null) {
+            fragmentTransaction {
+                replace(R.id.activity_pessoa_fragment_primaria, ListaPessoasFragments())
+            }
+        } else {
+
+            retornaFragmentSelecionada()
+
         }
 
+    }
+
+    private fun retornaFragmentSelecionada() {
+        val fragment = supportFragmentManager.findFragmentByTag("visualiza_pessoa")
+
+        fragment?.let {
+
+            val novoFragment = criaNovoFragment(fragment)
+
+            removeFragmentAntigo(fragment)
+
+            supportFragmentManager.popBackStack()
+
+            criaNovoFragmentComDadosSelecionados(novoFragment)
+
+        }
+    }
+
+    private fun criaNovoFragmentComDadosSelecionados(novoFragment: VisualizaPessoaFragment) {
+        fragmentTransaction {
+
+            val container =
+                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    R.id.activity_pessoa_fragment_secundaria
+                } else {
+                    addToBackStack(null)
+                    R.id.activity_pessoa_fragment_primaria
+                }
+
+            replace(container, novoFragment)
+        }
+    }
+
+    private fun removeFragmentAntigo(fragment: Fragment) {
+        fragmentTransaction {
+            remove(fragment)
+        }
+    }
+
+    private fun criaNovoFragment(fragment: Fragment): VisualizaPessoaFragment {
+        val dadosDoFragmentAntigo = fragment.arguments
+        val novoFragment = VisualizaPessoaFragment()
+        novoFragment.arguments = dadosDoFragmentAntigo
+        return novoFragment
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -86,20 +137,25 @@ class ListaNomesActivity : AppCompatActivity() {
         val fragment = VisualizaPessoaFragment()
         fragment.arguments = dados
 
+
+
         fragmentTransaction {
-            replace(R.id.activity_pessoas_fragment_container, fragment)
+
+            val container =
+                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    R.id.activity_pessoa_fragment_secundaria
+                } else {
+                    addToBackStack(null)
+                    R.id.activity_pessoa_fragment_primaria
+                }
+
+            replace(container, fragment, "visualiza_pessoa")
         }
 
     }
 
     private fun abreFormularioNovaPessoa() {
         startActivityForResult(abreFormulario, PESSOA_REQUEST_CODE)
-    }
-
-    private fun fragmentTransaction(executa: FragmentTransaction.() -> Unit) {
-        val transacao = supportFragmentManager.beginTransaction()
-        executa(transacao)
-        transacao.commit()
     }
 
 
