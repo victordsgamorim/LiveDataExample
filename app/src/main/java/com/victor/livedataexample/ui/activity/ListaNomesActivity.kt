@@ -5,11 +5,13 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.victor.livedataexample.R
 import com.victor.livedataexample.model.Pessoa
 import com.victor.livedataexample.ui.activity.extensions.fragmentTransaction
 import com.victor.livedataexample.ui.fragments.ListaPessoasFragments
 import com.victor.livedataexample.ui.fragments.VisualizaPessoaFragment
+import kotlinx.android.synthetic.main.activity_pessoas.*
 
 class ListaNomesActivity : AppCompatActivity() {
 
@@ -52,15 +54,18 @@ class ListaNomesActivity : AppCompatActivity() {
     private fun criaNovoFragmentComDadosSelecionados(novoFragment: VisualizaPessoaFragment) {
         fragmentTransaction {
 
-            val container =
-                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    R.id.activity_pessoa_fragment_secundaria
-                } else {
-                    addToBackStack(null)
-                    R.id.activity_pessoa_fragment_primaria
-                }
+            val container = configuraContainerVisualizaPessoa()
 
             replace(container, novoFragment)
+        }
+    }
+
+    private fun FragmentTransaction.configuraContainerVisualizaPessoa(): Int {
+        return if (activity_pessoa_fragment_secundaria != null) {
+            R.id.activity_pessoa_fragment_secundaria
+        } else {
+            addToBackStack(null)
+            R.id.activity_pessoa_fragment_primaria
         }
     }
 
@@ -141,13 +146,7 @@ class ListaNomesActivity : AppCompatActivity() {
 
         fragmentTransaction {
 
-            val container =
-                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    R.id.activity_pessoa_fragment_secundaria
-                } else {
-                    addToBackStack(null)
-                    R.id.activity_pessoa_fragment_primaria
-                }
+            val container = configuraContainerVisualizaPessoa()
 
             replace(container, fragment, "visualiza_pessoa")
         }
