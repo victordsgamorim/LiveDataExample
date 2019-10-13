@@ -1,7 +1,6 @@
 package com.victor.livedataexample.ui.activity
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -12,6 +11,8 @@ import com.victor.livedataexample.ui.activity.extensions.fragmentTransaction
 import com.victor.livedataexample.ui.fragments.ListaPessoasFragments
 import com.victor.livedataexample.ui.fragments.VisualizaPessoaFragment
 import kotlinx.android.synthetic.main.activity_pessoas.*
+
+private const val TAG_VISUALIZA_PESSOA = "visualiza_pessoa"
 
 class ListaNomesActivity : AppCompatActivity() {
 
@@ -36,7 +37,7 @@ class ListaNomesActivity : AppCompatActivity() {
     }
 
     private fun retornaFragmentSelecionada() {
-        val fragment = supportFragmentManager.findFragmentByTag("visualiza_pessoa")
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_VISUALIZA_PESSOA)
 
         fragment?.let {
 
@@ -56,7 +57,7 @@ class ListaNomesActivity : AppCompatActivity() {
 
             val container = configuraContainerVisualizaPessoa()
 
-            replace(container, novoFragment)
+            replace(container, novoFragment, TAG_VISUALIZA_PESSOA)
         }
     }
 
@@ -148,7 +149,7 @@ class ListaNomesActivity : AppCompatActivity() {
 
             val container = configuraContainerVisualizaPessoa()
 
-            replace(container, fragment, "visualiza_pessoa")
+            replace(container, fragment, TAG_VISUALIZA_PESSOA)
         }
 
     }

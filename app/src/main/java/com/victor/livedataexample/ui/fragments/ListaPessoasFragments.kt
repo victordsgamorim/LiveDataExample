@@ -45,6 +45,7 @@ class ListaPessoasFragments : Fragment() {
         configuraAdapter()
         abreFormEditaPessoa()
         abreFormularioNovaPessoa()
+        menuItemRemovePessoa()
         activity?.title = "Pessoas"
 
     }
